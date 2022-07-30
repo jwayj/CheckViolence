@@ -1,4 +1,3 @@
-from lib2to3.pgen2.tokenize import tokenize
 from transformers import BertTokenizer
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from torch.utils.data import TensorDataset
@@ -8,15 +7,15 @@ from sklearn.model_selection import train_test_split
 import pandas as pd
 from tkinter import filedialog, messagebox
 
-from CheckViolence.utils import check_gpu
+from utils import check_gpu
 
 
 class Dataset():
     def __init__(self):
-        self.train = None,
-        self.valid = None,
-        self.test = None,
-        self.tokenizer = None,
+        self.train = None
+        self.valid = None
+        self.test = None
+        self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         self.max_length = 128
         self.device = check_gpu()
         print(f"max_length : {self.max_length}")
@@ -46,15 +45,18 @@ class Dataset():
             self.test = pd.read_csv(file)
             print(f"Test : {len(self.test)}")
 
-    def set_tokenizer(self, tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")):
+    def set_tokenizer(self, tokenizer):
         self.tokenizer = tokenizer
+
+    def get_tokenizer(self):
+        return self.tokenizer
 
     # 입력받은 문장을 tokenizer를 통해 BERT input으로 만들어줌
     def make_input(self, sentence):
         encoded_dict = self.tokenizer.encode_plus(sentence, \
                                                 add_special_tokens = True,\
                                                 pad_to_max_length=True,\
-                                                max_length=self.MAX_LENGTH, 
+                                                max_length=self.max_length, 
                                                 return_attention_mask=True,
                                                 truncation = True,
                                                 )
@@ -85,9 +87,12 @@ class Dataset():
         token_type_ids = torch.tensor(token_type_ids, dtype=torch.long).to(self.device)
         # inputs = (input_ids, attention_masks, token_type_ids)
 
+        # print("Original Text : ", sentences[0])
+        # print("Tokenizer Text : ", BertTokenizer.from_pretrained("bert-base-uncased").tokenize(sentences[0]))
+        # print("Encode Text : ", (BertTokenizer.from_pretrained("bert-base-uncased").encode(sentences[0], add_special_tokens = True, max_length = self.max_length)))
         print("Original Text : ", sentences[0])
         print("Tokenizer Text : ", self.tokenizer.tokenize(sentences[0]))
-        print("Encode Text : ", (self.tokenizer.encode(sentences[0], add_special_tokens = True, max_length = self.MAX_LENGTH)))
+        print("Encode Text : ", (self.tokenizer.encode(sentences[0], add_special_tokens = True, max_length = self.max_length)))
 
         # labels = torch.tensor(df['violence'].tolist(), dtype=torch.long).to(device)
         # labels = torch.tensor(df.iloc[:, -1].tolist(), dtype=torch.long).to(self.device)
@@ -126,7 +131,7 @@ class Dataset():
 
         return train_dataloader, validation_dataloader, test_dataloader
 
-    def get_dataloader(self, data):
+    def get_infer_dataloader(self, data): # data : ['sentence1', 'sentence2', ...]
         dataset = self.make_dataset(data)
 
         batch_size = len(dataset)
