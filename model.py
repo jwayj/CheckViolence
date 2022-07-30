@@ -1,5 +1,7 @@
+from tkinter import filedialog
 from transformers import BertForSequenceClassification, BertConfig
 from transformers import get_linear_schedule_with_warmup
+from transformers import BertTokenizer
 import torch
 
 from sklearn.metrics import classification_report
@@ -8,14 +10,18 @@ import numpy as np
 import random
 import time
 import datetime
+import os
 
-from CheckViolence.utils import check_gpu
+from utils import check_gpu, format_time, flat_accuracy
+from dataloader import Dataset
 
 
 class Models():
     def __init__(self, num_labels):
         self.num_labels = num_labels
         self.device = check_gpu()
+        self.dataset = Dataset()
+        self.tokenizer = self.dataset.tokenizer
 
     
     def BERT(self):
@@ -63,7 +69,6 @@ class Models():
         # Number of training epochs. The BERT authors recommend between 2 and 4. 
         # We chose to run for 4, but we'll see later that this may be over-fitting the
         # training data.
-        epochs = 1
 
         # Total number of training steps is [number of batches] x [number of epochs]. 
         # (Note that this is not the same as the number of training samples).
@@ -123,7 +128,7 @@ class Models():
                 # Progress update every 40 batches.
                 if step % 50 == 0 and not step == 0:
                     # Calculate elapsed time in minutes.
-                    elapsed = self.format_time(time.time() - t0)
+                    elapsed = format_time(time.time() - t0)
                     
                     # Report progress.
                     print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(train_dataloader), elapsed))
@@ -187,7 +192,7 @@ class Models():
             avg_train_loss = total_train_loss / len(train_dataloader)            
             
             # Measure how long this epoch took.
-            training_time = self.format_time(time.time() - t0)
+            training_time = format_time(time.time() - t0)
 
             print("")
             print("  Average training loss: {0:.2f}".format(avg_train_loss))
@@ -257,7 +262,7 @@ class Models():
 
                 # Calculate the accuracy for this batch of test sentences, and
                 # accumulate it over all batches.
-                total_eval_accuracy += self.flat_accuracy(logits, label_ids)
+                total_eval_accuracy += flat_accuracy(logits, label_ids)
                 
 
             # Report the final accuracy for this validation run.
@@ -268,7 +273,7 @@ class Models():
             avg_val_loss = total_eval_loss / len(validation_dataloader)
             
             # Measure how long the validation run took.
-            validation_time = self.format_time(time.time() - t0)
+            validation_time = format_time(time.time() - t0)
             
             print("  Validation Loss: {0:.2f}".format(avg_val_loss))
             print("  Validation took: {:}".format(validation_time))
@@ -288,7 +293,7 @@ class Models():
         print("")
         print("Training complete!")
 
-        print("Total training took {:} (h:mm:ss)".format(self.format_time(time.time()-total_t0)))
+        print("Total training took {:} (h:mm:ss)".format(format_time(time.time()-total_t0)))
 
     def test(self, test_dataloader):
         # Prediction on test set
@@ -309,7 +314,6 @@ class Models():
 
             # Unpack the inputs from our dataloader
             b_input_ids, b_input_mask, b_token_type_ids, b_labels = batch
-            # print(b_input_ids)
 
             # Telling the model not to compute or store gradients, saving memory and 
             # speeding up prediction
@@ -340,22 +344,91 @@ class Models():
         target_names = ['0', '1']
         print(classification_report(true_labels, predictions, target_names=target_names))
 
-    # 작성 중
-    def inference(self, sentences):
-        pass
+    def inference(self, sentence):
+        # Prediction on test set
 
-    # Function to calculate the accuracy of our predictions vs labels
-    def flat_accuracy(preds, labels):
-        pred_flat = np.argmax(preds, axis=1).flatten()
-        labels_flat = labels.flatten()
-        return np.sum(pred_flat == labels_flat) / len(labels_flat)
+        print(f'Predicting labels for {sentence}')
 
-    def format_time(elapsed):
-        '''
-        Takes a time in seconds and returns a string hh:mm:ss
-        '''
-        # Round to the nearest second.
-        elapsed_rounded = int(round((elapsed)))
-        
-        # Format as hh:mm:ss
-        return str(datetime.timedelta(seconds=elapsed_rounded))
+        dataloader_ = self.dataset.get_infer_dataloader(data = [sentence])
+
+        # Put model in evaluation mode
+        self.model.eval()
+
+        # Tracking variables 
+        predictions = []
+
+        # Predict 
+        for batch in dataloader_:
+            # Add batch to GPU
+            # batch = tuple(t.to(device) for t in batch)
+            # print(batch)
+
+            # Unpack the inputs from our dataloader
+            b_input_ids, b_input_mask, b_token_type_ids = batch
+
+            # Telling the model not to compute or store gradients, saving memory and 
+            # speeding up prediction
+            with torch.no_grad():
+                # Forward pass, calculate logit predictions
+                outputs = self.model(input_ids = b_input_ids, 
+                                token_type_ids = b_token_type_ids, 
+                                attention_mask = b_input_mask,
+                                )
+
+            logits = outputs[0]
+
+            # Move logits and labels to CPU
+            logits = logits.detach().cpu().numpy()
+
+            # Store predictions and true labels
+            for logit in logits:
+                pred = np.argmax(logit)
+                predictions.append(pred)
+
+        print('    DONE.')
+        print(f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다")
+
+
+    def save_model(self):
+        # Saving best-practices: if you use defaults names for the model, you can reload it using from_pretrained()
+
+        # output_dir = '/content/drive/MyDrive/model_save/'
+        output_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a directory")
+
+        # Create output directory if needed
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        print("Saving model to %s" % output_dir)
+
+        # Save a trained model, configuration and tokenizer using `save_pretrained()`.
+        # They can then be reloaded using `from_pretrained()`
+        model_to_save = self.model.module if hasattr(self.model, 'module') else self.model  # Take care of distributed/parallel training
+        model_to_save.save_pretrained(output_dir)
+        self.tokenizer.save_pretrained(output_dir)
+
+        # Good practice: save your training arguments together with the trained model
+        # torch.save(args, os.path.join(output_dir, 'training_args.bin'))
+
+    def load_model(self):
+        model = BertForSequenceClassification.from_pretrained(
+            "bert-base-uncased", # Use the 12-layer BERT model, with an uncased vocab.
+            num_labels = 2, # The number of output labels--2 for binary classification.
+                            # You can increase this for multi-class tasks.   
+            output_attentions = False, # Whether the model returns attentions weights.
+            output_hidden_states = False, # Whether the model returns all hidden-states.
+            return_dict = False,
+        )
+
+        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
+        output_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a directory")
+        print("directory path : ", output_dir)
+        # Load a trained model and vocabulary that you have fine-tuned
+        self.model = model.from_pretrained(output_dir)
+        tokenizer = tokenizer.from_pretrained(output_dir)
+
+        # Copy the model to the GPU.
+        self.model.to(self.device)
+
+        return tokenizer
