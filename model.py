@@ -388,45 +388,39 @@ class Models():
         print('    DONE.')
         print(f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다")
 
+        return f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다"
+
 
     def save_model(self):
         # Saving best-practices: if you use defaults names for the model, you can reload it using from_pretrained()
 
         # output_dir = '/content/drive/MyDrive/model_save/'
-        output_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a directory")
+        save_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a model save directory")
 
         # Create output directory if needed
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
 
-        print("Saving model to %s" % output_dir)
+        print(f"Saving model to {save_dir}")
 
         # Save a trained model, configuration and tokenizer using `save_pretrained()`.
         # They can then be reloaded using `from_pretrained()`
         model_to_save = self.model.module if hasattr(self.model, 'module') else self.model  # Take care of distributed/parallel training
-        model_to_save.save_pretrained(output_dir)
-        self.tokenizer.save_pretrained(output_dir)
+        model_to_save.save_pretrained(save_dir)
+        self.tokenizer.save_pretrained(save_dir)
 
         # Good practice: save your training arguments together with the trained model
         # torch.save(args, os.path.join(output_dir, 'training_args.bin'))
 
     def load_model(self):
-        model = BertForSequenceClassification.from_pretrained(
-            "bert-base-uncased", # Use the 12-layer BERT model, with an uncased vocab.
-            num_labels = 2, # The number of output labels--2 for binary classification.
-                            # You can increase this for multi-class tasks.   
-            output_attentions = False, # Whether the model returns attentions weights.
-            output_hidden_states = False, # Whether the model returns all hidden-states.
-            return_dict = False,
-        )
-
+        model = self.BERT()
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
-        output_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a directory")
-        print("directory path : ", output_dir)
+        load_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a model load directory")
+        print(f"Loading model from {load_dir}")
         # Load a trained model and vocabulary that you have fine-tuned
-        self.model = model.from_pretrained(output_dir)
-        tokenizer = tokenizer.from_pretrained(output_dir)
+        self.model = model.from_pretrained(load_dir)
+        tokenizer = tokenizer.from_pretrained(load_dir)
 
         # Copy the model to the GPU.
         self.model.to(self.device)
