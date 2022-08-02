@@ -1,7 +1,6 @@
 from tkinter import filedialog
 from transformers import BertForSequenceClassification, BertConfig
 from transformers import get_linear_schedule_with_warmup
-from transformers import BertTokenizer
 import torch
 
 from sklearn.metrics import classification_report
@@ -17,7 +16,8 @@ from dataloader import Dataset
 
 
 class Models():
-    def __init__(self, num_labels):
+    def __init__(self, model_name, num_labels):
+        self.model_name = model_name
         self.num_labels = num_labels
         self.device = check_gpu()
         self.dataset = Dataset()
@@ -25,8 +25,18 @@ class Models():
 
     
     def BERT(self):
-        self.model = model = BertForSequenceClassification.from_pretrained(
-                                "bert-base-uncased",    # Use the 12-layer BERT model, with an uncased vocab.
+        if self.model_name == 'bert':        
+            self.model = model = BertForSequenceClassification.from_pretrained(
+                                    "bert-base-uncased",    # Use the 12-layer BERT model, with an uncased vocab.
+                                    num_labels = self.num_labels,   # The number of output labels--2 for binary classification.
+                                                                    # You can increase this for multi-class tasks.   
+                                    output_attentions = False,  # Whether the model returns attentions weights.
+                                    output_hidden_states = False,   # Whether the model returns all hidden-states.
+                                    return_dict = False,
+                                )
+        elif self.model_name == 'krbert':
+            self.model = model = BertForSequenceClassification.from_pretrained(
+                                "snunlp/KR-BERT-char16424",    # Use the 12-layer BERT model, with an uncased vocab.
                                 num_labels = self.num_labels,   # The number of output labels--2 for binary classification.
                                                                 # You can increase this for multi-class tasks.   
                                 output_attentions = False,  # Whether the model returns attentions weights.
@@ -42,12 +52,11 @@ class Models():
                             eps = 1e-8 # args.adam_epsilon  - default is 1e-8.
                          )
 
-    # 현재는 BERT로 작성되어 있음, 모델 추가시 수정 필요
     def about_model(self):
         # Get all of the model's parameters as a list of tuples.
         params = list(self.model.named_parameters())
 
-        print('The BERT model has {:} different named parameters.\n'.format(len(params)))
+        print(f'The {self.model_name.upper()} model has {len(params)} different named parameters.\n')
 
         print('==== Embedding Layer ====\n')
 
@@ -413,14 +422,13 @@ class Models():
         # torch.save(args, os.path.join(output_dir, 'training_args.bin'))
 
     def load_model(self):
-        model = self.BERT()
-        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        self.BERT()
 
         load_dir = filedialog.askdirectory(initialdir = "/", title = "Please select a model load directory")
         print(f"Loading model from {load_dir}")
         # Load a trained model and vocabulary that you have fine-tuned
-        self.model = model.from_pretrained(load_dir)
-        tokenizer = tokenizer.from_pretrained(load_dir)
+        self.model = self.model.from_pretrained(load_dir)
+        tokenizer = self.tokenizer.from_pretrained(load_dir)
 
         # Copy the model to the GPU.
         self.model.to(self.device)
