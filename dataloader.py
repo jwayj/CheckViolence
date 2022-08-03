@@ -70,7 +70,8 @@ class Dataset():
         input_ids = []
         attention_masks = []
         token_type_ids = []
-        for line in tqdm(sentences):
+        # for line in tqdm(sentences):
+        for line in sentences:
         #     line = ' '.join(mecab.morphs(line)) # mecab 적용, encode하면 tokenizer.tokenize 해준 것과 같은 결과 나옴
             encoded_dict = self.make_input(line)
 
@@ -88,14 +89,8 @@ class Dataset():
         # inputs = (input_ids, attention_masks, token_type_ids)
 
         # print("Original Text : ", sentences[0])
-        # print("Tokenizer Text : ", BertTokenizer.from_pretrained("bert-base-uncased").tokenize(sentences[0]))
-        # print("Encode Text : ", (BertTokenizer.from_pretrained("bert-base-uncased").encode(sentences[0], add_special_tokens = True, max_length = self.max_length)))
-        print("Original Text : ", sentences[0])
-        print("Tokenizer Text : ", self.tokenizer.tokenize(sentences[0]))
-        print("Encode Text : ", (self.tokenizer.encode(sentences[0], add_special_tokens = True, max_length = self.max_length)))
-
-        # labels = torch.tensor(df['violence'].tolist(), dtype=torch.long).to(device)
-        # labels = torch.tensor(df.iloc[:, -1].tolist(), dtype=torch.long).to(self.device)
+        # print("Tokenizer Text : ", self.tokenizer.tokenize(sentences[0]))
+        # print("Encode Text : ", (self.tokenizer.encode(sentences[0], add_special_tokens = True, max_length = self.max_length)))
 
         if labels == None:
             return TensorDataset(input_ids, attention_masks, token_type_ids)

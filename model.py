@@ -356,7 +356,7 @@ class Models():
     def inference(self, sentence):
         # Prediction on test set
 
-        print(f'Predicting labels for {sentence}')
+        # print(f'Predicting labels for {sentence}')
 
         dataloader_ = self.dataset.get_infer_dataloader(data = [sentence])
 
@@ -394,10 +394,11 @@ class Models():
                 pred = np.argmax(logit)
                 predictions.append(pred)
 
-        print('    DONE.')
-        print(f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다")
+        # print('    DONE.')
+        # print(f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다")
 
-        return f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다"
+        # return f"'{sentence}' 은/는 폭력성이 포함된 문장입니다" if predictions[0] == 1 else f"'{sentence}' 은/는 폭력성이 포함되지 않은 문장입니다"
+        return sentence, predictions[0]
 
 
     def save_model(self):
