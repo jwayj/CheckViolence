@@ -1,5 +1,5 @@
 from tkinter import filedialog
-from transformers import BertForSequenceClassification, BertConfig
+from transformers import BertForSequenceClassification, BertConfig, BertTokenizer
 from transformers import get_linear_schedule_with_warmup
 import torch
 
@@ -18,14 +18,13 @@ from dataloader import Dataset
 
 
 class Models():
-    def __init__(self, model_name, num_labels):
+    def __init__(self, model_name='bert', num_labels='2'):
         self.model_name = model_name
         self.num_labels = num_labels
         self.device = check_gpu()
         self.dataset = Dataset()
         self.tokenizer = self.dataset.tokenizer
 
-    
     def BERT(self):
         if self.model_name == 'bert':        
             self.model = model = BertForSequenceClassification.from_pretrained(
@@ -36,6 +35,8 @@ class Models():
                                     output_hidden_states = False,   # Whether the model returns all hidden-states.
                                     return_dict = False,
                                 )
+            self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
         elif self.model_name == 'krbert':
             self.model = model = BertForSequenceClassification.from_pretrained(
                                 "snunlp/KR-BERT-char16424",    # Use the 12-layer BERT model, with an uncased vocab.
@@ -45,6 +46,8 @@ class Models():
                                 output_hidden_states = False,   # Whether the model returns all hidden-states.
                                 return_dict = False,
                              )
+            self.tokenizer = BertTokenizer.from_pretrained("snunlp/KR-BERT-char16424")
+
         self.model = model.to(self.device)
 
         # Note: AdamW is a class from the huggingface library (as opposed to pytorch) 
@@ -76,10 +79,10 @@ class Models():
             print("{:<55} {:>12}".format(p[0], str(tuple(p[1].size()))))
 
 
-    def train(self, train_dataloader, validation_dataloader, epochs = 4):
+    def train(self, train_dataloader, validation_dataloader, epochs = 4, project_title=None, project_entity=None):
         # after login to wandb at shell command
-        project_title = "wandb-test_NLP"
-        wandb.init(project=project_title)
+        if project_title:
+            wandb.init(project=project_title, entity=project_entity)
 
         # Number of training epochs. The BERT authors recommend between 2 and 4. 
         # We chose to run for 4, but we'll see later that this may be over-fitting the
@@ -305,7 +308,8 @@ class Models():
                 }
             )
             # add to log training_stats in wandb
-            wandb.log(training_stats[epoch_i])
+            if project_title:
+                wandb.log(training_stats[epoch_i])
 
         print("")
         print("Training complete!")
@@ -437,9 +441,9 @@ class Models():
         print(f"Loading model from {load_dir}")
         # Load a trained model and vocabulary that you have fine-tuned
         self.model = self.model.from_pretrained(load_dir)
-        tokenizer = self.tokenizer.from_pretrained(load_dir)
+        self.tokenizer = self.tokenizer.from_pretrained(load_dir)
 
         # Copy the model to the GPU.
         self.model.to(self.device)
 
-        return tokenizer
+        return self.tokenizer
