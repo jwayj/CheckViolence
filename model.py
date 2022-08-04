@@ -11,6 +11,8 @@ import time
 import datetime
 import os
 
+import wandb
+
 from utils import check_gpu, format_time, flat_accuracy
 from dataloader import Dataset
 
@@ -75,6 +77,10 @@ class Models():
 
 
     def train(self, train_dataloader, validation_dataloader, epochs = 4):
+        # after login to wandb at shell command
+        project_title = "wandb-test_NLP"
+        wandb.init(project=project_title)
+
         # Number of training epochs. The BERT authors recommend between 2 and 4. 
         # We chose to run for 4, but we'll see later that this may be over-fitting the
         # training data.
@@ -298,6 +304,8 @@ class Models():
                     'Validation Time': validation_time
                 }
             )
+            # add to log training_stats in wandb
+            wandb.log(training_stats[epoch_i])
 
         print("")
         print("Training complete!")
