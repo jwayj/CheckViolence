@@ -13,3 +13,7 @@
 
 - 유튜브 댓글 크롤링
   - 용도 : 폭력성 높은 채팅 데이터 생성용(test용)
+
+-LLM 학습용 데이터 내 유해표현 검출 AI모델 학습용 데이터
+  - 모델학습용(fine-tuning)
+  https://aihub.or.kr/aihubdata/data/view.do?pageIndex=1&currMenu=118&topMenu=100&srchOptnCnd=OPTNCND001&searchKeyword=%ED%8F%AD%EB%A0%A5&srchDetailCnd=DETAILCND001&srchOrder=ORDER001&srchPagePer=20&aihubDataSe=extrldata&dataSetSn=71833
