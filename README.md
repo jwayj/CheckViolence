@@ -12,7 +12,7 @@
 한국어 대화 텍스트에서 문장 단위의 폭력성 유무를 자동으로 분류하는 NLP 모델을 검증하고 LoRA (Low-Rank Adaptation) 기법을 적용하여 모델의 파인튜닝 효율성을 극대화하고 성능을 분석한다.
 
 ## 통계
-실제 상황에서 흔히 접하는 7가지 주요 범주로 분류체계를 정의하고 이 연구에서는 트레이닝 세트 365500개와 테스트 세트 44998개로 분할했다. 트레이닝 세트와 테스트 세트는 문장, 폭력성 유무, 폭력성 유형으로 구성되어 있다.
+실제 상황에서 흔히 접하는 7가지 주요 범주로 분류체계를 정의하고 이 연구에서는 트레이닝 세트 365,500개와 테스트 세트 44,998개로 분할했다. 트레이닝 세트와 테스트 세트는 문장, 폭력성 유무, 폭력성 유형으로 구성되어 있다.
 <img width="1379" height="750" alt="image" src="https://github.com/user-attachments/assets/0c8168a3-1cf5-4547-b1c6-48225827490a" />
 
 
@@ -28,6 +28,10 @@
   - 용도 : 모델학습용(fine-tuning)
  
 ## 실험결과
+트레이닝 데이터개수를 10,000개, 50,000개, 100,000개, 200,000개, 365,500개로 늘리며 트레이닝 후 테스트를 진행하고 유형별로 분석했을 때 HATE, DISCRIMINATION, VIOLENCE는 더이상 f1-score가 향상되지 않는 것을 확인할 수 있었다. 그 외에 CENSURE, ABUSE, CRIME, SEXUAL은 f1-score가 지속적으로 향상되는 것을 확인할 수 있다. 따라서 HATE, DISCRIMINATION, VIOLENCE는 추가적인 트레이닝이 불필요하고 CENSURE, ABUSE, CRIME, SEXUAL은 1,000,000개 이상의 추가적인 트레이닝이 필요할 것으로 추측된다.
+<img width="1370" height="745" alt="image" src="https://github.com/user-attachments/assets/9ef4e822-4675-427e-9354-f1897c58c314" />
+
+
 
 ## 고찰
 
