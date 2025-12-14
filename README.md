@@ -28,8 +28,9 @@
   - 용도 : 모델학습용(fine-tuning)
  
 ## 실험결과
-트레이닝 데이터개수를 10,000개, 50,000개, 100,000개, 200,000개, 365,500개로 늘리며 트레이닝 후 테스트를 진행하고 유형별로 분석했을 때 HATE, DISCRIMINATION, VIOLENCE는 더이상 f1-score가 향상되지 않는 것을 확인할 수 있었다. 그 외에 CENSURE, ABUSE, CRIME, SEXUAL은 f1-score가 지속적으로 향상되는 것을 확인할 수 있다. 따라서 HATE, DISCRIMINATION, VIOLENCE는 추가적인 트레이닝이 불필요하고 CENSURE, ABUSE, CRIME, SEXUAL은 1,000,000개 이상의 추가적인 트레이닝이 필요할 것으로 추측된다.
-<img width="1370" height="745" alt="image" src="https://github.com/user-attachments/assets/9ef4e822-4675-427e-9354-f1897c58c314" />
+- Train Data Size에 따른 F1 Score 변화
+  - 트레이닝 데이터개수를 10,000개, 50,000개, 100,000개, 200,000개, 365,500개로 늘리며 트레이닝 후 테스트를 진행하고 유형별로 분석했을 때 HATE, DISCRIMINATION, VIOLENCE는 더이상 f1-score가 향상되지 않는 것을 확인할 수 있었다. 그 외에 CENSURE, ABUSE, CRIME, SEXUAL은 f1-score가 지속적으로 향상되는 것을 확인할 수 있다. 따라서 HATE, DISCRIMINATION, VIOLENCE는 추가적인 트레이닝이 불필요하고 CENSURE, ABUSE, CRIME, SEXUAL은 1,000,000개 이상의 추가적인 트레이닝이 필요할 것으로 추측된다.
+    <img width="1370" height="745" alt="image" src="https://github.com/user-attachments/assets/9ef4e822-4675-427e-9354-f1897c58c314" />
 
 
 
