@@ -1,0 +1,450 @@
+---
+title: "CheckViolence 유형별 분석"
+format: pdf
+editor: visual
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+
+```{r}
+library(tidyverse) 
+library(dplyr) 
+library(tidyr)
+library(Cairo)
+```
+
+### training 데이터: 10,000
+
+``` texinfo
+--- 훈련 데이터셋 (train) 유형별 개수 분석 --- 
+**총 훈련 문장 수 (중복 제거 전): 10,000개** 
+**총 레이블 수 (다중 레이블 포함): 13,018개** 
+----------------------------------------   
+- ABUSE        : 424개   
+- CENSURE      : 4,527개   
+- CRIME        : 181개   
+- DISCRIMINATION: 896개   
+- HATE         : 1,491개   
+- IMMORAL_NONE : 4,490개   
+- SEXUAL       : 544개   
+- VIOLENCE     : 465개 
+----------------------------------------
+```
+
+\[전체 데이터셋\] 테스트 결과
+
+``` texinfo
+                    precision    recall  f1-score   support
+
+ 비도덕성 없음 (0)       0.76      0.87      0.81     18987
+ 비도덕성 있음 (1)       0.90      0.80      0.85     26011
+
+          accuracy                           0.83     44998
+         macro avg       0.83      0.84      0.83     44998
+      weighted avg       0.84      0.83      0.83     44998
+```
+
+유형별 테스트 결과
+
+``` texinfo
+  - 유형: CENSURE             | 샘플 수: 19,866    | f1-score: 0.82
+  - 유형: ABUSE               | 샘플 수: 1,474     | f1-score: 0.85
+  - 유형: HATE                | 샘플 수: 9,222     | f1-score: 0.86
+  - 유형: VIOLENCE            | 샘플 수: 2,167     | f1-score: 0.85
+  - 유형: CRIME               | 샘플 수: 1,075     | f1-score: 0.71
+  - 유형: SEXUAL              | 샘플 수: 2,737     | f1-score: 0.74
+  - 유형: DISCRIMINATION      | 샘플 수: 2,664     | f1-score: 0.82
+```
+
+### training 데이터: 50,000
+
+``` texinfo
+--- 훈련 데이터셋 (train) 유형별 개수 분석 --- 
+**총 훈련 문장 수 (중복 제거 전): 50,000개** 
+**총 레이블 수 (다중 레이블 포함): 64,978개** 
+----------------------------------------   
+- ABUSE        : 2,199개   
+- CENSURE      : 22,661개   
+- CRIME        : 891개   
+- DISCRIMINATION: 4,533개   
+- HATE         : 7,456개   
+- IMMORAL_NONE : 22,510개   
+- SEXUAL       : 2,568개   
+- VIOLENCE     : 2,160개 
+----------------------------------------
+```
+
+\[전체 데이터셋\] 테스트 결과
+
+``` texinfo
+                    precision    recall  f1-score   support
+
+ 비도덕성 없음 (0)       0.81      0.89      0.85     18987
+ 비도덕성 있음 (1)       0.91      0.85      0.88     26011
+
+          accuracy                           0.86     44998
+         macro avg       0.86      0.87      0.86     44998
+      weighted avg       0.87      0.86      0.87     44998
+```
+
+유형별 테스트 결과
+
+``` texinfo
+  - 유형: CENSURE              | 샘플 수: 19,866   | f1-score: 0.86
+  - 유형: ABUSE                | 샘플 수: 1,474    | f1-score: 0.90
+  - 유형: HATE                 | 샘플 수: 9,222    | f1-score: 0.91
+  - 유형: VIOLENCE             | 샘플 수: 2,167    | f1-score: 0.91
+  - 유형: CRIME                | 샘플 수: 1,075    | f1-score: 0.76
+  - 유형: SEXUAL               | 샘플 수: 2,737    | f1-score: 0.79
+  - 유형: DISCRIMINATION       | 샘플 수: 2,664    | f1-score: 0.87
+```
+
+### training 데이터: 100,000
+
+``` texinfo
+--- 훈련 데이터셋 (train) 유형별 개수 분석 --- 
+**총 훈련 문장 수 (중복 제거 전): 100,000개** 
+**총 레이블 수 (다중 레이블 포함): 130,065개** ----------------------------------------   
+- ABUSE        : 4,470개   
+- CENSURE      : 45,405개   
+- CRIME        : 1,755개   
+- DISCRIMINATION: 9,074개   
+- HATE         : 14,960개   
+- IMMORAL_NONE : 44,973개   
+- SEXUAL       : 5,113개   
+- VIOLENCE     : 4,315개 
+----------------------------------------
+```
+
+\[전체 데이터셋\] 테스트 결과
+
+``` texinfo
+                    precision    recall  f1-score   support
+
+ 비도덕성 없음 (0)       0.83      0.89      0.86     18987
+ 비도덕성 있음 (1)       0.91      0.87      0.89     26011
+
+          accuracy                           0.88     44998
+         macro avg       0.87      0.88      0.87     44998
+      weighted avg       0.88      0.88      0.88     44998
+```
+
+유형별 테스트 결과
+
+``` texinfo
+  - 유형: CENSURE              | 샘플 수: 19,866   | f1-score: 0.88   
+  - 유형: ABUSE                | 샘플 수: 1,474    | f1-score: 0.91   
+  - 유형: HATE                 | 샘플 수: 9,222    | f1-score: 0.92   
+  - 유형: VIOLENCE             | 샘플 수: 2,167    | f1-score: 0.93   
+  - 유형: CRIME                | 샘플 수: 1,075    | f1-score: 0.78   
+  - 유형: SEXUAL               | 샘플 수: 2,737    | f1-score: 0.80   
+  - 유형: DISCRIMINATION       | 샘플 수: 2,664    | f1-score: 0.89
+```
+
+### training 데이터: 200,000
+
+``` texinfo
+--- 훈련 데이터셋 (train) 유형별 개수 분석 --- 
+**총 훈련 문장 수 (중복 제거 전): 200,000개** 
+**총 레이블 수 (다중 레이블 포함): 259,864개** ----------------------------------------   
+- ABUSE        : 8,918개   
+- CENSURE      : 90,665개   
+- CRIME        : 3,437개   
+- DISCRIMINATION: 18,183개   
+- HATE         : 29,820개   
+- IMMORAL_NONE : 89,943개   
+- SEXUAL       : 10,249개   
+- VIOLENCE     : 8,649개 
+----------------------------------------
+```
+
+\[전체 데이터셋\] 테스트 결과
+
+``` texinfo
+                    precision    recall  f1-score   support
+
+ 비도덕성 없음 (0)       0.84      0.90      0.87     18987
+ 비도덕성 있음 (1)       0.92      0.87      0.90     26011
+
+          accuracy                           0.89     44998
+         macro avg       0.88      0.89      0.88     44998
+      weighted avg       0.89      0.89      0.89     44998
+```
+
+유형별 테스트 결과
+
+``` texinfo
+  - 유형: CENSURE              | 샘플 수: 19,866   | f1-score: 0.89   
+  - 유형: ABUSE                | 샘플 수: 1,474    | f1-score: 0.93   
+  - 유형: HATE                 | 샘플 수: 9,222    | f1-score: 0.92   
+  - 유형: VIOLENCE             | 샘플 수: 2,167    | f1-score: 0.93   
+  - 유형: CRIME                | 샘플 수: 1,075    | f1-score: 0.80   
+  - 유형: SEXUAL               | 샘플 수: 2,737    | f1-score: 0.82   
+  - 유형: DISCRIMINATION       | 샘플 수: 2,664    | f1-score: 0.89
+```
+
+### training 데이터: 365,500
+
+```         
+--- 훈련 데이터셋 (train) 유형별 개수 분석 --- 
+**총 훈련 문장 수 (중복 제거 전): 365,500개** 
+**총 레이블 수 (다중 레이블 포함): 475,173개** ----------------------------------------   
+- ABUSE        : 16,338개   
+- CENSURE      : 166,099개   
+- CRIME        : 6,339개   
+- DISCRIMINATION: 33,238개   
+- HATE         : 54,740개   
+- IMMORAL_NONE : 163,937개   
+- SEXUAL       : 18,844개   
+- VIOLENCE     : 15,638개 
+----------------------------------------
+```
+
+## 데이터 분석
+
+```{r}
+f1_score_by_traindata <- tibble(
+  violense_type  = rep(c("CENSURE", "ABUSE", "HATE", "VIOLENCE", "CRIME", "SEXUAL", "DISCRIMINATION"), 4),
+  train = c(
+      424,4527,181,896,1491,4490,465,
+      2199,22661,891,4533,7456,22510,2160,
+      4470,45405,1755,9074,14960,44973,4315,
+      8918,90665,3437,18183,29820,89943,8649),
+  f1_score = c(
+    0.82,0.85,0.86,0.85,0.71,0.74,0.82,
+    0.86,0.90,0.91,0.91,0.76,0.79,0.87,
+    0.88,0.91,0.92,0.93,0.78,0.80,0.89,
+    0.89,0.93,0.92,0.93,0.80,0.82,0.89)
+)
+f1_score_by_traindata
+```
+
+```{r}
+f1_score_by_traindata %>%
+  ggplot(aes(x = train, y = f1_score, color = violense_type)) +
+  geom_point(size = 2) +
+  geom_line(linewidth = 1) +
+  labs(
+    title = "Train Data Size에 따른 F1 Score 변화",
+    x = "Train Data Size",
+    y = "F1 Score",
+    color = "Violence Type" # 범례 제목 설정
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0.7, 1.0), breaks = seq(0.7, 1.0, by = 0.05))
+```
+
+```{r}
+test_sample <- tibble(
+  type = c("CENSURE", "ABUSE", "HATE", "VIOLENCE", "CRIME", "SEXUAL", "DISCRIMINATION"),
+  test = c(19866, 1474, 9222, 2167, 1075, 2737, 2664),
+  train = c(16338, 166099, 6339, 33238, 54740, 18844, 15638)
+)
+```
+
+```{r}
+# 데이터를 ggplot2에 적합하도록 긴 형식(Long Format)으로 변환
+data_long <- test_sample %>%
+  pivot_longer(
+    cols = c(test, train),
+    names_to = "Dataset_Type", # 새로운 컬럼 이름: Dataset_Type
+    values_to = "Count"        # 값 컬럼 이름: Count
+  )
+
+# 폭력성 유형(type)별 총 개수 기준으로 정렬 (선택 사항)
+data_long <- data_long %>%
+  mutate(type = fct_reorder(type, Count, .fun = sum, .desc = TRUE))
+
+# 그룹화된 바 차트 생성
+bar_chart <- ggplot(data_long, aes(x = type, y = Count, fill = Dataset_Type)) +
+  geom_bar(
+    stat = "identity", 
+    position = position_dodge(width = 0.9), # 막대를 나란히 표시 (그룹화)
+    color = "black" # 막대 테두리 색상
+  ) +
+  geom_text(
+    aes(label = scales::comma(Count)), # 숫자 포맷팅 (예: 1,000)
+    position = position_dodge(width = 0.9),
+    vjust = -0.5, # 막대 위로 텍스트 위치 조정
+    size = 3.5
+  ) +
+  labs(
+    title = "폭력성 유형별 Train/Test 데이터셋 분포",
+    x = "폭력성 유형 (Type)",
+    y = "개수 (Count)",
+    fill = "데이터셋 구분"
+  ) +
+  scale_y_continuous(labels = scales::comma, expand = expansion(mult = c(0, 0.15))) + # y축 레이블에 쉼표 추가 및 상단 여백 추가
+  theme_minimal(base_size = 14) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, face = "bold"), # x축 레이블 회전 및 굵게
+    plot.title = element_text(hjust = 0.5, face = "bold"), # 제목 중앙 정렬
+    legend.position = "top" # 범례 위치
+  )
+
+# 차트 출력
+print(bar_chart)
+```
+
+```{r}
+fine_tuning <- tibble(
+  type = c("CENSURE", "ABUSE", "HATE", "VIOLENCE", "CRIME", "SEXUAL", "DISCRIMINATION"),
+  fine_tuning = c(0.87, 0.89, 0.78, 0.91, 0.89, 0.80, 0.82),
+  train = c(0.90, 0.96, 0.93, 0.94, 0.83, 0.86, 0.91)
+)
+```
+
+```{r}
+# 필요한 패키지 로드
+library(tidyverse)
+library(fmsb)
+library(scales) # 색상 투명도 조절을 위해 사용
+
+# 1. 데이터 정의
+fine_tuning <- tibble(
+  type = c("CENSURE", "ABUSE", "HATE", "VIOLENCE", "CRIME", "SEXUAL", "DISCRIMINATION"),
+  fine_tuning = c(0.87, 0.89, 0.78, 0.91, 0.89, 0.80, 0.82),
+  train = c(0.90, 0.96, 0.93, 0.94, 0.83, 0.86, 0.91)
+)
+
+# 2. fmsb::radarchart에 적합한 데이터 형태로 변환
+# (1) type 컬럼을 제외하고 행과 열을 바꿈 (transpose)
+data_for_radar <- fine_tuning %>%
+  select(-type) %>% 
+  t() %>% 
+  as.data.frame() 
+
+# (2) 컬럼 이름 설정 (type 컬럼의 값을 사용)
+colnames(data_for_radar) <- fine_tuning$type
+
+# (3) 행 이름 설정
+rownames(data_for_radar) <- c("fine_tuning", "train")
+
+# (4) 최대값(Max = 1.00)과 최소값(Min = 0.70) 행 생성
+# rep() 함수를 사용하여 7개의 컬럼에 대해 1.00과 0.70을 각각 채웁니다.
+max_row <- data.frame(t(rep(1.00, ncol(data_for_radar))))
+min_row <- data.frame(t(rep(0.70, ncol(data_for_radar))))
+
+# (5) 최대값, 최소값 행의 컬럼 이름 설정
+colnames(max_row) <- colnames(data_for_radar)
+colnames(min_row) <- colnames(data_for_radar)
+
+# (6) 데이터프레임 합치기 (Max, Min, 데이터 순서)
+data_radar_fmsb <- rbind(max_row, min_row, data_for_radar)
+
+# 3. 레이더 차트 그리기
+# 시각적 설정을 위한 par() 함수
+par(mfrow=c(1, 1), mar=c(1, 2, 2, 1), oma=c(0, 0, 0, 0))
+
+radarchart(
+  data_radar_fmsb,
+  axistype = 1, # 축 레이블 타입
+  
+  # 다각형 설정
+  pcol = c("#00AFBB", "#E7B800"), # 선 색상 (파랑, 노랑)
+  pfcol = scales::alpha(c("#00AFBB", "#E7B800"), 0.2), # 채우기 색상 및 투명도
+  plwd = 2, # 선 굵기
+  plty = 1, # 선 타입
+  
+  # 축 설정
+  cglcol = "grey", # 그리드 선 색상
+  cglty = 1, # 그리드 선 타입
+  axislabcol = "grey", # 축 레이블 색상
+  cglwd = 0.8, # 그리드 선 굵기
+  
+  # 축 값 레이블 설정
+  calcex = 0.8, # 축 값 레이블 크기
+  
+  # 항목 이름 설정
+  vlcex = 1.0, # 항목 이름(Type) 크기
+  title = "폭력성 유형별 성능 비교 (Fine-tuning vs Train Data Score)"
+)
+
+# 범례 추가
+legend(
+  x = "bottomleft", 
+  legend = rownames(data_radar_fmsb)[3:4], # "fine_tuning"과 "train"
+  bty = "n", 
+  pch = 20, 
+  col = c("#00AFBB", "#E7B800"), 
+  text.col = "black", 
+  cex = 1.0, 
+  pt.cex = 1.5
+)
+```
+
+```{r}
+# 1. 데이터 정의
+koELECTRA <- tibble(
+  type = c("CENSURE", "ABUSE", "HATE", "VIOLENCE", "CRIME", "SEXUAL", "DISCRIMINATION"),
+  koELECTRA = c(0.90, 0.95, 0.93, 0.94, 0.81, 0.86, 0.91),
+  train = c(0.90, 0.96, 0.93, 0.94, 0.83, 0.86, 0.91)
+)
+
+# 2. fmsb::radarchart에 적합한 데이터 형태로 변환
+
+# (1) type 컬럼을 제외하고 행과 열을 바꿈 (transpose)
+data_for_radar <- koELECTRA %>%
+  select(-type) %>% 
+  t() %>% 
+  as.data.frame() 
+
+# (2) 컬럼 이름 설정 (type 컬럼의 값을 사용)
+colnames(data_for_radar) <- koELECTRA$type
+
+# (3) 행 이름 설정
+rownames(data_for_radar) <- c("koELECTRA", "train")
+
+# (4) 최대값(Max = 1.00)과 최소값(Min = 0.80) 행 생성
+# (점수 분포가 0.81~0.96이므로 최소값을 0.80으로 설정하여 차이 강조)
+max_row <- data.frame(t(rep(1.00, ncol(data_for_radar))))
+min_row <- data.frame(t(rep(0.80, ncol(data_for_radar))))
+
+# (5) 최대값, 최소값 행의 컬럼 이름 설정
+colnames(max_row) <- colnames(data_for_radar)
+colnames(min_row) <- colnames(data_for_radar)
+
+# (6) 데이터프레임 합치기 (Max, Min, 데이터 순서)
+data_radar_fmsb <- rbind(max_row, min_row, data_for_radar)
+
+# 3. 레이더 차트 그리기 
+# 시각적 설정을 위한 par() 함수
+par(mfrow=c(1, 1), mar=c(1, 2, 2, 1), oma=c(0, 0, 0, 0))
+
+radarchart(
+  data_radar_fmsb,
+  axistype = 1, # 축 레이블 타입
+  
+  # 다각형 설정
+  pcol = c("#53A3CD", "#D22B2B"), # 선 색상 (코발트 블루, 진한 레드)
+  pfcol = scales::alpha(c("#53A3CD", "#D22B2B"), 0.2), # 채우기 색상 및 투명도
+  plwd = 2, # 선 굵기
+  plty = 1, # 선 타입
+  
+  # 축 설정
+  cglcol = "grey", # 그리드 선 색상
+  cglty = 1, # 그리드 선 타입
+  axislabcol = "grey", # 축 레이블 색상
+  cglwd = 0.8, # 그리드 선 굵기
+  
+  # 축 값 레이블 설정
+  calcex = 0.8, # 축 값 레이블 크기
+  
+  # 항목 이름 설정
+  vlcex = 1.0, # 항목 이름(Type) 크기
+  title = "폭력성 유형별 성능 비교 (KoELECTRA Fine-tuning vs Train Data Score)"
+)
+
+# 범례 추가
+legend(
+  x = "bottomleft", 
+  legend = rownames(data_radar_fmsb)[3:4], # "koELECTRA"와 "train"
+  bty = "n", 
+  pch = 20, 
+  col = c("#53A3CD", "#D22B2B"), 
+  text.col = "black", 
+  cex = 1.0, 
+  pt.cex = 1.5
+)
+```
